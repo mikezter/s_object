@@ -11,6 +11,10 @@ module SObject
       it 'raises error without object type' do
         lambda{ Query.new }.should raise_error(ArgumentError)
       end
+
+      it 'only accepts strings as object type' do
+        lambda{ Query.new 12345 }.should raise_error(ArgumentError)
+      end
     end
 
     context 'fields' do

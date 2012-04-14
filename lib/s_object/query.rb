@@ -6,11 +6,12 @@ module SObject
     include Enumerable
 
     def initialize(object_type, options = {})
+      raise ArgumentError.new unless object_type.is_a?(String)
+      @type             = object_type
 
       options[:fields] ||= %w(Id)
       @where            = Array(options[:where])
       @fields           = Array(options[:fields])
-      @type             = object_type
       @limit            = options[:limit]
       @url              = options[:url]
     end
