@@ -19,11 +19,15 @@ module SObject
 
     context 'fields' do
       before :each do
-        @query = Query.new 'Account'
+        @query = Query.new 'Account', :fields => %w(lastName, FirstName)
       end
 
       it 'is an array' do
         @query.fields.should be_kind_of(Array)
+      end
+
+      it 'contains all downcased strings' do
+        @query.fields.join.should_not match /[A-Z]/
       end
 
       it 'always contains the id field' do

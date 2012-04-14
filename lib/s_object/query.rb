@@ -9,7 +9,6 @@ module SObject
       raise ArgumentError.new unless object_type.is_a?(String)
       @type             = object_type
 
-      options[:fields] ||= %w(Id)
       @where            = Array(options[:where])
       @fields           = Array(options[:fields])
       @limit            = options[:limit]
