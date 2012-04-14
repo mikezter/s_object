@@ -30,7 +30,7 @@ def rspec(path)
 end
 
 def run_rspec(cmd)
-  run "bundle exec rspec -c -b #{cmd}"
+  run "bundle exec rspec -c #{cmd}"
 end
 
 def run(cmd)
