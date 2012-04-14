@@ -14,10 +14,6 @@ module SObject
       @params = options[:params] || {}
     end
 
-    def headers
-      Authorization.headers
-    end
-
     def run
       response = Typhoeus::Request.run @url, options
       @data = JSON.parse(response.body)
@@ -27,18 +23,22 @@ module SObject
 
   private
 
-     def raise_error
-       object = data.first
-       raise SObject.error_class_for(object['message'], object['errorCode'])
-     end
+    def headers
+      Authorization.headers
+    end
 
-     def options
-       {
-         :headers => headers,
-         :body    => body,
-         :params  => params
-       }
-     end
+    def raise_error
+     object = data.first
+     raise SObject.error_class_for(object['message'], object['errorCode'])
+    end
+
+    def options
+     {
+       :headers => headers,
+       :body    => body,
+       :params  => params
+     }
+    end
 
   end
 end

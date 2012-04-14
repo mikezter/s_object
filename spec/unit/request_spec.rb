@@ -55,11 +55,6 @@ module SObject
         end
       end
 
-      it 'uses Authorization headers' do
-        dummy = { :foo => 'bar' }
-        Authorization.should_receive(:headers).and_return dummy
-        @request.headers.should eq dummy
-      end
     end
 
   end
