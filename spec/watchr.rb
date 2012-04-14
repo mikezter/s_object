@@ -23,10 +23,14 @@ def rspec(path)
   if not File.exists?(path)
     puts "File #{path} does not exist!"
   elsif File.read(path).include?(":focus => true")
-    run "bundle exec rspec -t @focus #{path}"
+    run_rspec "-t @focus #{path}"
   else
-    run "bundle exec rspec #{path}"
+    run_rspec path
   end
+end
+
+def run_rspec(cmd)
+  run "bundle exec rspec -c -b #{cmd}"
 end
 
 def run(cmd)
