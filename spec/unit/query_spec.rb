@@ -13,6 +13,19 @@ module SObject
       end
     end
 
+    context 'fields' do
+      before :each do
+        @query = Query.new 'Account'
+      end
+
+      it 'is an array' do
+        @query.fields.should be_kind_of(Array)
+      end
+
+      it 'always contains the id field' do
+        @query.fields.should include('id')
+      end
+    end
   end
 end
 
