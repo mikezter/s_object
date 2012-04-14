@@ -7,7 +7,7 @@
 watch( '^spec/(.*)/(.*)_spec\.rb' ) { |m| rspec m[0] }
 watch( '^spec/(.*)_spec\.rb' ) { |m| rspec m[0] }
 watch( '^lib/(.*)\.rb' ) { |m| rspec "spec/unit/#{m[1]}_spec.rb" }
-watch( '^lib/(.*)/(.*)\.rb' ) { |m| rspec "spec/unit/#{m[1]}/#{m[2]}_spec.rb" }
+watch( '^lib/(.*)/(.*)\.rb' ) { |m| rspec "spec/unit/#{m[2]}_spec.rb" }
 
 # --------------------------------------------------
 # Signal Handling
