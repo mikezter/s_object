@@ -55,8 +55,8 @@ module SObject
     end
 
     def delete
-      @response = Typhoeus::Request.delete(url, :headers => Authorization.headers)
-      return @response.success?
+      @response = Request.run(url, :method => :delete)
+      return true
     end
 
     def reload!
@@ -65,17 +65,12 @@ module SObject
 
     def save
       SObject.logger.info "Saving <#{type}:#{id}> to Salesforce."
-      @response = Typhoeus::Request.run(
+      @response = Request.run(
         url,
         :body => JSON.pretty_generate(saveable_fields),
-        :headers => Authorization.headers,
         :method => save_method
       )
-
-      return true if @response.success?
-
-      @error = JSON.parse(@response.body).first
-      raise SObject.error_class_for(error['message'], error['errorCode'])
+      return true
     end
 
     def method_missing(method, *args)
@@ -180,20 +175,10 @@ module SObject
       # Raises SObject::SalesforceError on other error conditions
       #
       def find_by_id(id)
-        response = Typhoeus::Request.get(
-          Authorization.service_url + "/sobjects/#{type}/#{id}",
-          :headers => Authorization.headers
+        response = Request.run(
+          Authorization.service_url + "/sobjects/#{type}/#{id}"
         )
-
-        parsed_response = JSON.parse(response.body)
-
-        unless response.success?
-          error_code    = parsed_response.first["errorCode"]
-          error_message = parsed_response.first["message"]
-          raise SObject.error_class_for(error_message + "<#{type}:#{id}>", error_code)
-        end
-
-        new(parsed_response)
+        new(response)
       end
 
       # Will query Salesforce for a SObject, selecting only the fields specified
@@ -206,13 +191,13 @@ module SObject
       #
       def find_fields_by_id(id, query_fields = ['id'])
         query_fields = Array(query_fields)
-        resulting_fields = Query.new(
+        result = Query.new(
           :where => "id = '#{id}'",
           :type  => type,
           :fields => query_fields
         ).records.first
-        raise ObjectNotFoundError.new("#{type} with ID #{id} not found.", 'NOT_FOUND') unless resulting_fields
-        return resulting_fields
+        raise ObjectNotFoundError.new("#{type} with ID #{id} not found.", 'NOT_FOUND') unless result
+        return result
       end
 
       # Will iterate over chunks of fields to build up a complete SObject
@@ -231,20 +216,8 @@ module SObject
       end
 
       def metadata
-        return @metadata if @metadata
-        @response = Typhoeus::Request.get(
-          Authorization.service_url + "/sobjects/#{type}/describe",
-          :headers => Authorization.headers
-        )
-
-        @metadata = JSON.parse(@response.body)
-
-        unless @response.success?
-          error_code    = @metadata.first["errorCode"]
-          error_message = @metadata.first["message"]
-          raise SObject.error_class_for(error_message + "<#{type}:#{id}>", error_code)
-        end
-
+        return @metadata if @metadatadd
+        @metadata = Request.run(Authorization.service_url + "/sobjects/#{type}/describe")
         if @metadata['fields']
           @metadata['fields'].each{ |field| field['name'] = field['name'].downcase }
         end
@@ -311,3 +284,4 @@ module SObject
     end # class << self
   end
 end
+
