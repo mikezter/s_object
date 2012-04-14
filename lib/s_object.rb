@@ -10,8 +10,10 @@ require 'typhoeus'
 require 'date'
 require 's_object/core_ext/date'
 
+require 's_object/request'
 require 's_object/authorization'
 require 's_object/query'
 require 's_object/factory'
 require 's_object/base'
 require 's_object/errors'
+
