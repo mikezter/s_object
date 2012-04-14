@@ -5,11 +5,12 @@ module SObject
 
     include Enumerable
 
-    def initialize(options = {})
+    def initialize(object_type, options = {})
+
       options[:fields] ||= %w(Id)
       @where            = Array(options[:where])
       @fields           = Array(options[:fields])
-      @type             = options[:type]
+      @type             = object_type
       @limit            = options[:limit]
       @url              = options[:url]
     end
@@ -121,3 +122,4 @@ module SObject
 
   end
 end
+
