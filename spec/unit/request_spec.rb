@@ -3,7 +3,13 @@ require 'spec_helper'
 module SObject
   describe Request do
     DUMMY_URL = 'http://localhost/'
-    ERROR_JSON = %q({'errorCode': 'ERROR_CODE', 'message': 'Error message here.'})
+    ERROR_JSON = %q([{"errorCode": "ERROR_CODE", "message": "Error message here."}])
+
+    before :all do
+      def Authorization.headers
+        {}
+      end
+    end
 
     it 'gets initialized with an url' do
       lambda{ Request.new }.should raise_error(ArgumentError)
@@ -33,13 +39,22 @@ module SObject
 
       context 'run' do
 
-        it 'raises an error on failing requests' do
+        before :each do
           error_response = mock(:success? => false, :body => ERROR_JSON)
           Typhoeus::Request.should_receive(:run).and_return error_response
+        end
 
+
+        it 'raises an error on failing requests' do
           lambda{ @request.run }.should raise_error(SalesforceError)
         end
+
+        it 'is provided by a class method shortcut' do
+          Request.should_receive(:new, :with => DUMMY_URL).and_return @request
+          lambda{ Request.run(DUMMY_URL) }.should raise_error(SalesforceError)
+        end
       end
+
       it 'uses Authorization headers' do
         dummy = { :foo => 'bar' }
         Authorization.should_receive(:headers).and_return dummy

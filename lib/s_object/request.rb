@@ -1,7 +1,11 @@
 module SObject
   class Request
 
-    attr_reader :body, :method, :params
+    attr_reader :body, :method, :params, :data
+
+    def self.run(url, options = {})
+      new(url, options).run
+    end
 
     def initialize(url, options = {})
       @url = url
@@ -15,10 +19,18 @@ module SObject
     end
 
     def run
-      Typhoeus::Request.run @url, options
+      response = Typhoeus::Request.run @url, options
+      @data = JSON.parse(response.body)
+      raise_error unless response.success?
     end
 
-   private
+
+  private
+
+     def raise_error
+       object = data.first
+       raise SObject.error_class_for(object['message'], object['errorCode'])
+     end
 
      def options
        {
