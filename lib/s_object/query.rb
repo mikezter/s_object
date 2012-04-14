@@ -58,7 +58,7 @@ module SObject
     end
 
     def data
-      @data ||= JSON.parse(response.body)
+      @data ||= Request.run(url, :params => params)
     end
 
     def records
@@ -102,22 +102,6 @@ module SObject
       where = 'WHERE '
       where += @where.join(' AND ')
       where
-    end
-
-    def response
-      return @response if @response
-      @response = Typhoeus::Request.get(
-        url,
-        :params => params,
-        :headers => Authorization.headers
-      )
-
-      unless @response.success?
-        error = JSON.parse(@response.body).first
-        raise SObject.error_class_for(error['message'], error['errorCode'])
-      end
-
-      return @response
     end
 
   end
