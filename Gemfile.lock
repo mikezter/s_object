@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kp_basic (0.0.1)
+    s_object (0.0.1)
       json
       typhoeus
 
@@ -46,7 +46,7 @@ PLATFORMS
 
 DEPENDENCIES
   factory_girl (< 3)
-  kp_basic!
   pry
   rspec
+  s_object!
   uuid
