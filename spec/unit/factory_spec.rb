@@ -25,10 +25,17 @@ module SObject
         custom_sobject_type = 'Mission__c'
         SObject.const_defined?('Mission').should be false
         SObject.const_defined?('Mission__c').should be false
+
         Factory.new(custom_sobject_type).get
         SObject.const_defined?('Mission').should be true
         SObject.const_defined?('Mission__c').should be false
       end
+
+      it 'defines a descendant of SObject::Base' do
+        object = Factory.new('Opportunity').get
+        object.superclass.should be Base
+      end
+
 
     end
 
