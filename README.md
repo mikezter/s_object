@@ -11,7 +11,7 @@ It circumvents `QUERY_TOO_COMPLICATED` errors for SObjects with many fields.
 Why should'nt i use it?
 -----------------------
 
-No tests contained. Any help appreciated.
+Some tests contained. Any help appreciated.
 
 How do i use it?
 ----------------
