@@ -1,5 +1,5 @@
 class Date
-  def to_gm_time
+  def utc
     convert_to_time(new_offset, :gm)
   end
 

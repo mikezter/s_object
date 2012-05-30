@@ -137,7 +137,7 @@ module SObject
         if field_type(key) == 'date'
           value = value.to_date.strftime(SF_DATETIME_FORMAT)
         elsif field_type(key) == 'datetime'
-          value = value.to_gm_time.strftime(SF_DATETIME_FORMAT)
+          value = value.utc.strftime(SF_DATETIME_FORMAT)
         end
         saveable_fields[key] = value
       end
