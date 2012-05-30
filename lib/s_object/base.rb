@@ -64,7 +64,6 @@ module SObject
     end
 
     def save
-      SObject.logger.info "Saving <#{type}:#{id}> to Salesforce."
       @response = Typhoeus::Request.run(
         url,
         :body => JSON.pretty_generate(saveable_fields),
