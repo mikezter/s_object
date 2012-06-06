@@ -71,6 +71,11 @@ module SObject
         :method => save_method
       )
 
+      if @response.success? && new_record?
+        parsed_response = JSON.parse(@response.body)
+        @id = parsed_response['id']
+      end
+
       return true if @response.success?
 
       @error = JSON.parse(@response.body).first
