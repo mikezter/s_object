@@ -1,3 +1,6 @@
+# -*- encoding : utf-8 -*-
+$:.unshift(File.join(File.dirname(__FILE__)))
+
 module SObject
   SF_API_VERSION = 'v22.0'
   SF_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000%z"
