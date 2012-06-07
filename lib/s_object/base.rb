@@ -138,6 +138,7 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
+        next if value.nil?
 
         if field_type(key) == 'date'
           value = value.to_date.strftime(SF_DATETIME_FORMAT)
