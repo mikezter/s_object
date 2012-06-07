@@ -138,17 +138,21 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
-        next if value.nil?
 
-        if field_type(key) == 'date'
-          value = value.to_date.strftime(SF_DATETIME_FORMAT)
-        elsif field_type(key) == 'datetime'
-          value = value.utc.strftime(SF_DATETIME_FORMAT)
-        end
+        value = convert_value_to_datetime_for(key) unless value.nil?
+
         saveable_fields[key] = value
       end
 
       return saveable_fields
+    end
+
+    def convert_value_to_datetime_for(key)
+      if field_type(key) == 'date'
+        fields[key].to_date.strftime(SF_DATETIME_FORMAT)
+      elsif field_type(key) == 'datetime'
+        fields[key].utc.strftime(SF_DATETIME_FORMAT)
+      end
     end
 
     def metadata; self.class.metadata; end
