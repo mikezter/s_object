@@ -149,10 +149,11 @@ module SObject
 
     def convert_value_to_datetime_for(key)
       if field_type(key) == 'date'
-        fields[key].to_date.strftime(SF_DATETIME_FORMAT)
+        return fields[key].to_date.strftime(SF_DATETIME_FORMAT)
       elsif field_type(key) == 'datetime'
-        fields[key].utc.strftime(SF_DATETIME_FORMAT)
+        return fields[key].utc.strftime(SF_DATETIME_FORMAT)
       end
+      fields[key]
     end
 
     def metadata; self.class.metadata; end
