@@ -139,7 +139,7 @@ module SObject
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
 
-        value = convert_value_to_datetime_for(key) unless value.nil?
+        value = convert_value_to_datetime_for(key) unless (value.nil? || value == "")
 
         saveable_fields[key] = value
       end
