@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = SObject::VERSION
 
-  gem.add_dependency "typhoeus"
+  gem.add_dependency "typhoeus", "~>0.3.0"
   gem.add_dependency "json"
 
   gem.add_development_dependency "rspec"
