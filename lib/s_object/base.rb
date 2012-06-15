@@ -139,7 +139,9 @@ module SObject
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
 
-        value = convert_value_to_datetime_for(key) if (!value.nil? && value != "")
+        if !value.nil? && value != ""
+          value = to_sf_datetime_format(key)
+        end
 
         saveable_fields[key] = value
       end
@@ -147,7 +149,7 @@ module SObject
       return saveable_fields
     end
 
-    def convert_value_to_datetime_for(key)
+    def to_sf_datetime_format(key)
       if field_type(key) == 'date'
         return fields[key].to_date.strftime(SF_DATETIME_FORMAT)
       elsif field_type(key) == 'datetime'
