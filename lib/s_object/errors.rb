@@ -1,6 +1,8 @@
 module SObject
   class Error < StandardError; end
 
+  class CurlError < Error; end
+
   class SalesforceError < Error
     attr_reader :code
     def initialize(message, code = '')

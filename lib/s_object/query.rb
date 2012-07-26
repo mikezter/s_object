@@ -112,6 +112,7 @@ module SObject
       )
 
       unless @response.success?
+        raise CurlError.new(@response) if @response.curl_return_code != 0 || @response.body.empty?
         error = JSON.parse(@response.body).first
         raise SObject.error_class_for(error['message'], error['errorCode'])
       end
