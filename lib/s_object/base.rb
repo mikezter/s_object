@@ -260,6 +260,7 @@ module SObject
         if @metadata['fields']
           @metadata['fields'].each{ |field| field['name'] = field['name'].downcase }
         end
+
         return @metadata
       end
 
@@ -295,8 +296,14 @@ module SObject
       end
 
       def field_metadata(field_name)
-        field_name = field_name.downcase
-        metadata['fields'].find{ |field| field['name'] == field_name }
+        raise "metadata['fields'] is empty" if metadata['fields'].nil?
+        begin
+          field_name = field_name.downcase
+          metadata['fields'].find{ |field| field['name'] == field_name }
+        rescue Exception => e
+          # get exception to change message to include more infos
+          raise $!, "Fieldname was '#{field_name}' - #{$!}", $!.backtrace
+        end
       end
 
       def field_exists?(field_name)
