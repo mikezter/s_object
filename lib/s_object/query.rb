@@ -46,7 +46,7 @@ module SObject
     end
 
     def more?
-      not data['done']
+      not done?
     end
 
     def size
