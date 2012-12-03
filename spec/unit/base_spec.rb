@@ -49,6 +49,10 @@ module SObject
         @account.type.should eq "Account"
       end
 
+      it '#id' do
+        @account.id.should be 123
+      end
+
 
     end
   end
