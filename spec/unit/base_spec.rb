@@ -53,6 +53,22 @@ module SObject
         @account.id.should be 123
       end
 
+      context 'salesforce communication' do
+        before :each do
+          Request.should_receive(:run).once.and_return({ "example_status" => "1" })
+        end
+        it '#delete' do
+          @account.delete.should be true
+        end
+
+        it '#save' do
+          SObject.should_receive(:logger) { mock(:info => true) }
+          @account.should_receive(:saveable_fields).once.and_return({})
+          @account.save.should be true
+        end
+
+      end
+
 
     end
   end
