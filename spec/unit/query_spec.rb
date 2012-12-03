@@ -118,6 +118,12 @@ module SObject
 
     it { @query.params.should be_kind_of Hash }
 
+    it '#wheres' do
+      @query.wheres.should eq ""
+      query = Query.new 'Account', :where => [ "test IS NOT NULL", "1 = 1" ]
+      query.wheres.should eq "WHERE test IS NOT NULL AND 1 = 1"
+    end
+
   end
 end
 
