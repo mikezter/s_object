@@ -216,7 +216,7 @@ module SObject
       end
 
       def metadata
-        return @metadata if @metadatadd
+        return @metadata if @metadata
         @metadata = Request.run(Authorization.service_url + "/sobjects/#{type}/describe")
         if @metadata['fields']
           @metadata['fields'].each{ |field| field['name'] = field['name'].downcase }
