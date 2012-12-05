@@ -80,32 +80,32 @@ module SObject
       if field_name =~ /(.\w+)=$/ and (self.class.all_fields + fields.keys).include?($1)
         return fields[$1] = args.first
 
-      # Getter method for field
+        # Getter method for field
       elsif (self.class.all_fields + fields.keys).include?(field_name)
         return fields[field_name]
 
-      # Auto-resolve relationships
-      #
-      # Example:
-      # @opportunity.account
-      # #<SObject::Account:0x000001008e3950 ......>
-      #
+        # Auto-resolve relationships
+        #
+        # Example:
+        # @opportunity.account
+        # #<SObject::Account:0x000001008e3950 ......>
+        #
       elsif fields.has_key?(field_name + 'id') and field_type(field_name + 'id') == 'reference'
         return Factory.get(field_property(field_name + 'id', 'referenceTo').first).find(fields[field_name + 'id'])
 
-      # Auto-resolve custom relationships named relationid__c
-      #
-      # Example:
-      # @opportunity.my_relationid__c
-      # => '001R000000fA6h3IAC'
-      # @opportunity.my_relation__c
-      # => #<SObject::MyRelation:0x000001008e3950 ......>
-      #
+        # Auto-resolve custom relationships named relationid__c
+        #
+        # Example:
+        # @opportunity.my_relationid__c
+        # => '001R000000fA6h3IAC'
+        # @opportunity.my_relation__c
+        # => #<SObject::MyRelation:0x000001008e3950 ......>
+        #
       elsif fields.has_key?(field_name.sub(/__c$/, '') + 'id__c') and field_type(field_name.sub(/__c$/, '') + 'id__c') == 'reference'
         return Factory.get(field_property(field_name.sub(/__c$/, '') + 'id__c', 'referenceTo').first).find(fields[field_name.sub(/__c$/, '') + 'id__c'])
 
-      # Auto-resolve custom relationships named relation_lookup__c
-      #
+        # Auto-resolve custom relationships named relation_lookup__c
+        #
       elsif fields.has_key?(field_name.sub(/__c$/, '') + '_lookup__c') and field_type(field_name.sub(/__c$/, '') + '_lookup__c') == 'reference'
         return Factory.get(field_property(field_name.sub(/__c$/, '') + '_lookup__c', 'referenceTo').first).find(fields[field_name.sub(/__c$/, '') + '_lookup__c'])
 
@@ -116,7 +116,7 @@ module SObject
       end
     end
 
-  private
+    private
 
     def save_method
       new_record? ? :post : :patch
@@ -146,7 +146,7 @@ module SObject
     def field_exists?(field_name); self.class.field_exists?(field_name); end
     def field_property(field_name, property); self.class.field_property(field_name, property); end
 
-  public
+    public
 
 
     class << self
@@ -272,7 +272,7 @@ module SObject
         raise NotImplementedError.new('You need to define the type of your SObject in class method `type`')
       end
 
-    private
+      private
 
       def query
         return Query.new(
