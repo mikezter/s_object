@@ -97,6 +97,14 @@ module SObject
           Base.stub(:field_property).and_return 'Class Field Property'
           @account.send(:field_property, 'id', 'updateable').should eq 'Class Field Property'
         end
+
+        context '#to_datetime_string' do
+          [Date.today, DateTime.now, Time.now].each do |date|
+            it "type: #{date.class}" do
+              @account.send(:to_sf_datetime_string, date).should eq date.strftime(SObject::SF_DATETIME_FORMAT)
+            end
+          end
+        end
       end
 
       context 'salesforce communication' do
