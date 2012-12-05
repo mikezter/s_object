@@ -51,7 +51,7 @@ module SObject
     end
 
     def new_record?
-      @id.nil?
+      id.nil?
     end
 
     def delete
