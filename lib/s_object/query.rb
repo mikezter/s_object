@@ -21,9 +21,9 @@ module SObject
 
     def next_query
       @next ||= Query.new(
+        type,
         :url => next_records_url,
         :fields => fields,
-        :type => type,
         :where => where,
         :limit => limit
       )

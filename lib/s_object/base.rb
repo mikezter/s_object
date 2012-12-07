@@ -196,8 +196,8 @@ module SObject
       def find_fields_by_id(id, query_fields = ['id'])
         query_fields = Array(query_fields)
         result = Query.new(
+          type,
           :where => "id = '#{id}'",
-          :type  => type,
           :fields => query_fields
         ).records.first
         raise ObjectNotFoundError.new("#{type} with ID #{id} not found.", 'NOT_FOUND') unless result
@@ -280,7 +280,7 @@ module SObject
 
       def query
         return Query.new(
-          :type => type,
+          type,
           :fields => 'id'
         )
       end
