@@ -9,7 +9,9 @@ module SObject
     context 'get' do
 
       it 'defines a new class in module SObject' do
+        SObject.send(:remove_const, 'Opportunity') if SObject.const_defined?('Opportunity')
         SObject.const_defined?('Opportunity').should be false
+
         Factory.new('Opportunity').get
         SObject.const_defined?('Opportunity').should be true
       end
