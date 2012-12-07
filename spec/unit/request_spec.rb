@@ -5,10 +5,8 @@ module SObject
     DUMMY_URL = 'http://localhost/'
     ERROR_JSON = %q([{"errorCode": "ERROR_CODE", "message": "Error message here."}])
 
-    before :all do
-      def Authorization.headers
-        {}
-      end
+    before :each do
+       Authorization.stub(:access_token).and_return 'test_token123'
     end
 
     it 'gets initialized with an url' do
