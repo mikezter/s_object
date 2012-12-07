@@ -168,7 +168,6 @@ module SObject
         end
 
         it '#save' do
-          SObject.should_receive(:logger) { mock(:info => true) }
           @account.should_receive(:saveable_fields).once.and_return({})
           @account.save.should be true
         end
