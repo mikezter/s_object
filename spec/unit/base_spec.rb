@@ -12,7 +12,7 @@ module SObject
 
       INSTANCE_URL = 'http://example.org/abcdefg/'
       ORIGIN_INIT_FIELDS = { 'Id' => 123, "attributes" => { "type" => "Account",
-                                                           "url" => 'xyz'} }
+                                                            "url" => 'xyz'} }
 
       it 'has fields' do
         # TODO How the Heck is this class instanced?
