@@ -11,7 +11,8 @@ module SObject
       end
 
       INSTANCE_URL = 'http://example.org/abcdefg/'
-      ORIGN_INIT_FIELDS = { 'Id' => 123, "attributes" => { "type" => "Account", "url" => 'xyz' } }
+      ORIGN_INIT_FIELDS = { 'Id' => 123, "attributes" => { "type" => "Account",
+                                                           "url" => 'xyz'} }
 
       it 'has fields' do
         # TODO How the Heck is this class instanced?
@@ -26,6 +27,7 @@ module SObject
 
     end
 
+
     context 'instance methods' do
       before :each do
         Authorization.stub(:service_url).and_return INSTANCE_URL
@@ -35,6 +37,22 @@ module SObject
 
         @account = SObject::Factory.get('Account').new ORIGN_INIT_FIELDS
         @cleaned_fields = { 'id' => 123 }
+      end
+
+      context '#method_missing' do
+        subject { SObject::Factory.get('Account').new ORIGN_INIT_FIELDS.dup.merge('test' => 'x')}
+        before :each do
+          subject.class.stub(:all_fields).and_return ORIGN_INIT_FIELDS['attributes'].keys
+        end
+
+        it 'provides getter method' do
+          subject.test.should eq 'x'
+        end
+
+        it 'provides setter method' do
+          expect { subject.test = 'y'}.to change{subject.test}.from('x').to('y')
+        end
+
       end
 
       it '#fields' do
