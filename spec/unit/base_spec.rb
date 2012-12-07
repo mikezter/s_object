@@ -5,9 +5,15 @@ module SObject
   describe Base do
     context 'initialization' do
       it 'has no fields' do
-        pending
-        # Base.stub(:type).and_return 'type'
-        expect {Base.new}.to raise_error NoMethodError
+        Authorization.stub(:service_url).and_return INSTANCE_URL
+        Base.stub(:type).and_return 'type'
+
+        expect {Base.new}.to_not raise_error
+      end
+
+      it 'has no type' do
+        Authorization.stub(:service_url).and_return INSTANCE_URL
+        expect {Base.new}.to raise_error NotImplementedError
       end
 
       INSTANCE_URL = 'http://example.org/abcdefg/'
