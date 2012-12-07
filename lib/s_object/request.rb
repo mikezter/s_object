@@ -15,9 +15,10 @@ module SObject
     end
 
     def run
-      response = Typhoeus::Request.run @url, options
+      response = Typhoeus::Request.new(@url, options).run
       @data = JSON.parse(response.body)
       raise_error unless response.success?
+      return @data
     end
 
 
@@ -36,7 +37,8 @@ module SObject
      {
        :headers => headers,
        :body    => body,
-       :params  => params
+       :params  => params,
+       :method  => method
      }
     end
 

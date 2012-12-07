@@ -15,12 +15,12 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = SObject::VERSION
 
-  gem.add_dependency "typhoeus"
+  gem.add_dependency "typhoeus", '~> 0.5.3'
   gem.add_dependency "json"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "pry"
-  gem.add_development_dependency "factory_girl", "< 3"
+  gem.add_development_dependency "factory_girl"
   gem.add_development_dependency 'uuid'
 
 end
