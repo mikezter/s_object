@@ -1,10 +1,10 @@
 class Date
-  def to_gm_time
+  def utc
     time = Time.parse(self.to_s)
     time.gmtime
   end
 
-  def to_local_time
+  def localtime
     time = Time.parse(self.to_s)
     time.localtime
   end

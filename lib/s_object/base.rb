@@ -26,7 +26,7 @@ module SObject
           value = Factory.get(value['attributes']['type']).new(value)
 
         elsif value.is_a?(String) and (field_type(key) == 'date' or field_type(key) == 'datetime')
-          value = DateTime.parse(value + ' UTC').to_gm_time
+          value = DateTime.parse(value + ' UTC').utc
 
         end
         memo[key.downcase] = value
@@ -132,7 +132,7 @@ module SObject
         if field_type(key) == 'date'
           value = to_sf_datetime_string(value.to_date)
         elsif field_type(key) == 'datetime'
-          value = to_sf_datetime_string(value.to_gm_time)
+          value = to_sf_datetime_string(value.utc)
         end
         saveable_fields[key] = value
       end
