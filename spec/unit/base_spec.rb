@@ -11,7 +11,7 @@ module SObject
       end
 
       INSTANCE_URL = 'http://example.org/abcdefg/'
-      ORIGN_INIT_FIELDS = { 'Id' => 123, "attributes" => { "type" => "Account",
+      ORIGIN_INIT_FIELDS = { 'Id' => 123, "attributes" => { "type" => "Account",
                                                            "url" => 'xyz'} }
 
       it 'has fields' do
@@ -35,14 +35,14 @@ module SObject
         Base.stub(:field_type).and_return "string"
 
 
-        @account = SObject::Factory.get('Account').new ORIGN_INIT_FIELDS
+        @account = SObject::Factory.get('Account').new ORIGIN_INIT_FIELDS
         @cleaned_fields = { 'id' => 123 }
       end
 
       context '#method_missing' do
-        subject { SObject::Factory.get('Account').new ORIGN_INIT_FIELDS.dup.merge('test' => 'x')}
+        subject { SObject::Factory.get('Account').new ORIGIN_INIT_FIELDS.dup.merge('test' => 'x')}
         before :each do
-          subject.class.stub(:all_fields).and_return ORIGN_INIT_FIELDS['attributes'].keys
+          subject.class.stub(:all_fields).and_return ORIGIN_INIT_FIELDS['attributes'].keys
         end
 
         it 'provides getter method' do
@@ -253,7 +253,7 @@ module SObject
         end
 
         it '.create' do
-          account = SObject::Factory.get('Account').new ORIGN_INIT_FIELDS
+          account = SObject::Factory.get('Account').new ORIGIN_INIT_FIELDS
           Base.should_receive(:new).once.and_return account
 
           account.should_receive(:save).once
