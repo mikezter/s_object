@@ -53,6 +53,31 @@ module SObject
           expect { subject.test = 'y'}.to change{subject.test}.from('x').to('y')
         end
 
+        def stub_field_methods
+          field_name = yield
+
+          subject.stub(:fields).and_return({ field_name => field_name })
+          subject.should_receive(:field_property).with(field_name, 'referenceTo').
+            and_return(['Other'])
+          subject.should_receive(:field_type).with(field_name).and_return 'reference'
+        end
+
+        context 'auto_resolves relationships' do
+          ['other_tableid', 'other_tableid__c', 'other_table_lookup__c'].each do
+            |field_name|
+            it "auto-resolves relationship named #{field_name.gsub('other_table', '')}" do
+              stub_field_methods { field_name }
+
+              SObject::Factory.should_receive(:get).with('Other').once.
+                and_return mock(:find => 'abc')
+              subject.other_table.should eq 'abc'
+            end
+          end
+        end
+
+        it 'raises error for not resolvable method calls' do
+          expect { subject.not_resolvable_method }.to raise_error NoMethodError
+        end
       end
 
       it '#fields' do
