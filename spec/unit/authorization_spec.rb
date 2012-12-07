@@ -34,6 +34,14 @@ module SObject
       subject.service_url.should eq 'www.foo-bar.com/service_path'
     end
 
+    it '.reset' do
+      subject.stub(:request_credentials).and_return 'credentials'
+      subject.credentials
+
+      subject.stub(:request_credentials)
+      expect { subject.reset }.to change{ subject.credentials }
+    end
+
     context '.headers' do
       before :each do
         subject.stub(:access_token).and_return 'test_token123'
