@@ -16,7 +16,7 @@ module SObject
 
     def run
       response = Typhoeus::Request.new(@url, options).run
-      @data = JSON.parse(response.body)
+      @data = JSON.parse(response.body) unless response.code == 204
       raise_error unless response.success?
       return @data
     end
