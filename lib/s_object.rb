@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 $:.unshift(File.dirname(File.expand_path(__FILE__)))
 
 module SObject

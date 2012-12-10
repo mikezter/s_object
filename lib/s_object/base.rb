@@ -128,12 +128,14 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
+        next if value.nil? || value == ''
 
         if field_type(key) == 'date'
           value = to_sf_datetime_string(value.to_date)
         elsif field_type(key) == 'datetime'
           value = to_sf_datetime_string(value.utc)
         end
+
         saveable_fields[key] = value
       end
 
@@ -224,6 +226,7 @@ module SObject
         if @metadata['fields']
           @metadata['fields'].each{ |field| field['name'] = field['name'].downcase }
         end
+
         return @metadata
       end
 
@@ -259,8 +262,14 @@ module SObject
       end
 
       def field_metadata(field_name)
-        field_name = field_name.downcase
-        metadata['fields'].find{ |field| field['name'] == field_name }
+        raise "metadata['fields'] is empty" if metadata['fields'].nil?
+        begin
+          field_name = field_name.downcase
+          metadata['fields'].find{ |field| field['name'] == field_name }
+        rescue Exception => e
+          # get exception to change message to include more infos
+          raise e, "Fieldname was '#{field_name}' - #{e}", e.backtrace
+        end
       end
 
       def field_exists?(field_name)

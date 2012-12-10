@@ -1,2 +1,2 @@
 #!/bin/bash
-bundle exec pry -r lib/s_object -e 'Pry.start SObject'
+bundle exec pry -r ./lib/s_object -e 'Pry.start SObject'
