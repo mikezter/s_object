@@ -38,8 +38,8 @@ module SObject
       context 'run' do
 
         before :each do
-          error_response = mock(:success? => false, :body => ERROR_JSON)
-          Typhoeus::Request.should_receive(:run).and_return error_response
+          error_response = mock(:success? => false, :body => ERROR_JSON, :code => 666)
+          Typhoeus::Request.should_receive(:new).and_return stub(:run => error_response)
         end
 
 
@@ -48,8 +48,7 @@ module SObject
         end
 
         it 'is provided by a class method shortcut' do
-          Request.should_receive(:new, :with => DUMMY_URL).and_return @request
-          lambda{ Request.run(DUMMY_URL) }.should raise_error(SalesforceError)
+          expect { Request.run(DUMMY_URL) }.to raise_error(SalesforceError)
         end
       end
 
