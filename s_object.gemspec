@@ -2,7 +2,7 @@
 require File.expand_path('../lib/s_object/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Michael Stru\314\210der"]
+  gem.authors       = ["Michael Strueder"]
   gem.email         = ["mikezter@gmail.com"]
   gem.description   = %q{Provides database.com access to Salesforce SObjects.}
   gem.summary       = %q{Provides database.com access to Salesforce SObjects.}
