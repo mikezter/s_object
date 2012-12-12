@@ -5,11 +5,12 @@ module SObject
 
     include Enumerable
 
-    def initialize(options = {})
-      options[:fields] ||= %w(Id)
+    def initialize(object_type, options = {})
+      raise ArgumentError.new unless object_type.is_a?(String)
+      @type             = object_type
+
       @where            = Array(options[:where])
       @fields           = Array(options[:fields])
-      @type             = options[:type]
       @limit            = options[:limit]
       @url              = options[:url]
     end
@@ -20,9 +21,9 @@ module SObject
 
     def next_query
       @next ||= Query.new(
+        type,
         :url => next_records_url,
         :fields => fields,
-        :type => type,
         :where => where,
         :limit => limit
       )
@@ -45,7 +46,7 @@ module SObject
     end
 
     def more?
-      not data['done']
+      not done?
     end
 
     def size
@@ -57,7 +58,7 @@ module SObject
     end
 
     def data
-      @data ||= JSON.parse(response.body)
+      @data ||= Request.run(url, :params => params)
     end
 
     def records
@@ -103,21 +104,6 @@ module SObject
       where
     end
 
-    def response
-      return @response if @response
-      @response = Typhoeus::Request.get(
-        url,
-        :params => params,
-        :headers => Authorization.headers
-      )
-
-      unless @response.success?
-        error = JSON.parse(@response.body).first
-        raise SObject.error_class_for(error['message'], error['errorCode'])
-      end
-
-      return @response
-    end
-
   end
 end
+

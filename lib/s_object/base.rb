@@ -26,7 +26,7 @@ module SObject
           value = Factory.get(value['attributes']['type']).new(value)
 
         elsif value.is_a?(String) and (field_type(key) == 'date' or field_type(key) == 'datetime')
-          value = Time.parse(value + ' UTC').utc
+          value = DateTime.parse(value + ' UTC').utc
 
         end
         memo[key.downcase] = value
@@ -51,12 +51,12 @@ module SObject
     end
 
     def new_record?
-      @id.nil?
+      id.nil?
     end
 
     def delete
-      @response = Typhoeus::Request.delete(url, :headers => Authorization.headers)
-      return @response.success?
+      @response = Request.run(url, :method => :delete)
+      return true
     end
 
     def reload!
@@ -64,22 +64,12 @@ module SObject
     end
 
     def save
-      @response = Typhoeus::Request.run(
+      @response = Request.run(
         url,
         :body => JSON.pretty_generate(saveable_fields),
-        :headers => Authorization.headers,
         :method => save_method
       )
-
-      if @response.success? && new_record?
-        parsed_response = JSON.parse(@response.body)
-        @id = parsed_response['id']
-      end
-
-      return true if @response.success?
-
-      @error = JSON.parse(@response.body).first
-      raise SObject.error_class_for(error['message'], error['errorCode'])
+      return true
     end
 
     def method_missing(method, *args)
@@ -89,32 +79,32 @@ module SObject
       if field_name =~ /(.\w+)=$/ and (self.class.all_fields + fields.keys).include?($1)
         return fields[$1] = args.first
 
-      # Getter method for field
+        # Getter method for field
       elsif (self.class.all_fields + fields.keys).include?(field_name)
         return fields[field_name]
 
-      # Auto-resolve relationships
-      #
-      # Example:
-      # @opportunity.account
-      # #<SObject::Account:0x000001008e3950 ......>
-      #
+        # Auto-resolve relationships
+        #
+        # Example:
+        # @opportunity.account
+        # #<SObject::Account:0x000001008e3950 ......>
+        #
       elsif fields.has_key?(field_name + 'id') and field_type(field_name + 'id') == 'reference'
         return Factory.get(field_property(field_name + 'id', 'referenceTo').first).find(fields[field_name + 'id'])
 
-      # Auto-resolve custom relationships named relationid__c
-      #
-      # Example:
-      # @opportunity.my_relationid__c
-      # => '001R000000fA6h3IAC'
-      # @opportunity.my_relation__c
-      # => #<SObject::MyRelation:0x000001008e3950 ......>
-      #
+        # Auto-resolve custom relationships named relationid__c
+        #
+        # Example:
+        # @opportunity.my_relationid__c
+        # => '001R000000fA6h3IAC'
+        # @opportunity.my_relation__c
+        # => #<SObject::MyRelation:0x000001008e3950 ......>
+        #
       elsif fields.has_key?(field_name.sub(/__c$/, '') + 'id__c') and field_type(field_name.sub(/__c$/, '') + 'id__c') == 'reference'
         return Factory.get(field_property(field_name.sub(/__c$/, '') + 'id__c', 'referenceTo').first).find(fields[field_name.sub(/__c$/, '') + 'id__c'])
 
-      # Auto-resolve custom relationships named relation_lookup__c
-      #
+        # Auto-resolve custom relationships named relation_lookup__c
+        #
       elsif fields.has_key?(field_name.sub(/__c$/, '') + '_lookup__c') and field_type(field_name.sub(/__c$/, '') + '_lookup__c') == 'reference'
         return Factory.get(field_property(field_name.sub(/__c$/, '') + '_lookup__c', 'referenceTo').first).find(fields[field_name.sub(/__c$/, '') + '_lookup__c'])
 
@@ -125,7 +115,7 @@ module SObject
       end
     end
 
-  private
+    private
 
     def save_method
       new_record? ? :post : :patch
@@ -138,8 +128,13 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
+        next if value.nil? || value == ''
 
-        value = convert_value_to_datetime_for(key) unless (value.nil? || value == "")
+        if field_type(key) == 'date'
+          value = to_sf_datetime_string(value.to_date)
+        elsif field_type(key) == 'datetime'
+          value = to_sf_datetime_string(value.utc)
+        end
 
         saveable_fields[key] = value
       end
@@ -147,13 +142,8 @@ module SObject
       return saveable_fields
     end
 
-    def convert_value_to_datetime_for(key)
-      if field_type(key) == 'date'
-        return fields[key].to_date.strftime(SF_DATETIME_FORMAT)
-      elsif field_type(key) == 'datetime'
-        return fields[key].utc.strftime(SF_DATETIME_FORMAT)
-      end
-      fields[key]
+    def to_sf_datetime_string(value)
+      value.strftime(SF_DATETIME_FORMAT)
     end
 
     def metadata; self.class.metadata; end
@@ -161,7 +151,7 @@ module SObject
     def field_exists?(field_name); self.class.field_exists?(field_name); end
     def field_property(field_name, property); self.class.field_property(field_name, property); end
 
-  public
+    public
 
 
     class << self
@@ -190,20 +180,10 @@ module SObject
       # Raises SObject::SalesforceError on other error conditions
       #
       def find_by_id(id)
-        response = Typhoeus::Request.get(
-          Authorization.service_url + "/sobjects/#{type}/#{id}",
-          :headers => Authorization.headers
+        response = Request.run(
+          Authorization.service_url + "/sobjects/#{type}/#{id}"
         )
-
-        parsed_response = JSON.parse(response.body)
-
-        unless response.success?
-          error_code    = parsed_response.first["errorCode"]
-          error_message = parsed_response.first["message"]
-          raise SObject.error_class_for(error_message + "<#{type}:#{id}>", error_code)
-        end
-
-        new(parsed_response)
+        new(response)
       end
 
       # Will query Salesforce for a SObject, selecting only the fields specified
@@ -216,13 +196,13 @@ module SObject
       #
       def find_fields_by_id(id, query_fields = ['id'])
         query_fields = Array(query_fields)
-        resulting_fields = Query.new(
+        result = Query.new(
+          type,
           :where => "id = '#{id}'",
-          :type  => type,
           :fields => query_fields
         ).records.first
-        raise ObjectNotFoundError.new("#{type} with ID #{id} not found.", 'NOT_FOUND') unless resulting_fields
-        return resulting_fields
+        raise ObjectNotFoundError.new("#{type} with ID #{id} not found.", 'NOT_FOUND') unless result
+        return result
       end
 
       # Will iterate over chunks of fields to build up a complete SObject
@@ -242,22 +222,11 @@ module SObject
 
       def metadata
         return @metadata if @metadata
-        @response = Typhoeus::Request.get(
-          Authorization.service_url + "/sobjects/#{type}/describe",
-          :headers => Authorization.headers
-        )
-
-        @metadata = JSON.parse(@response.body)
-
-        unless @response.success?
-          error_code    = @metadata.first["errorCode"]
-          error_message = @metadata.first["message"]
-          raise SObject.error_class_for(error_message + "<#{type}:#{id}>", error_code)
-        end
-
+        @metadata = Request.run(Authorization.service_url + "/sobjects/#{type}/describe")
         if @metadata['fields']
           @metadata['fields'].each{ |field| field['name'] = field['name'].downcase }
         end
+
         return @metadata
       end
 
@@ -293,8 +262,14 @@ module SObject
       end
 
       def field_metadata(field_name)
-        field_name = field_name.downcase
-        metadata['fields'].find{ |field| field['name'] == field_name }
+        raise "metadata['fields'] is empty" if metadata['fields'].nil?
+        begin
+          field_name = field_name.downcase
+          metadata['fields'].find{ |field| field['name'] == field_name }
+        rescue Exception => e
+          # get exception to change message to include more infos
+          raise e, "Fieldname was '#{field_name}' - #{e}", e.backtrace
+        end
       end
 
       def field_exists?(field_name)
@@ -309,11 +284,11 @@ module SObject
         raise NotImplementedError.new('You need to define the type of your SObject in class method `type`')
       end
 
-    private
+      private
 
       def query
         return Query.new(
-          :type => type,
+          type,
           :fields => 'id'
         )
       end
@@ -321,3 +296,4 @@ module SObject
     end # class << self
   end
 end
+

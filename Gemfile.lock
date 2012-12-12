@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    kp_basic (0.0.1)
+    s_object (0.0.1)
       json
-      typhoeus
+      typhoeus (~> 0.5.3)
 
 GEM
   remote: https://rubygems.org/
@@ -13,31 +13,39 @@ GEM
       multi_json (~> 1.0)
     coderay (1.0.5)
     diff-lcs (1.1.3)
+    ethon (0.5.7)
+      ffi (~> 1.2.0)
+      mime-types (~> 1.18)
     factory_girl (2.6.4)
       activesupport (>= 2.3.9)
+    ffi (1.2.0)
     i18n (0.6.0)
-    json (1.6.6)
+    json (1.7.5)
     macaddr (1.5.0)
       systemu (>= 2.4.0)
     method_source (0.7.1)
-    mime-types (1.18)
+    mime-types (1.19)
     multi_json (1.2.0)
     pry (0.9.8.4)
       coderay (~> 1.0.5)
       method_source (~> 0.7.1)
       slop (>= 2.4.4, < 3)
-    rspec (2.9.0)
-      rspec-core (~> 2.9.0)
-      rspec-expectations (~> 2.9.0)
-      rspec-mocks (~> 2.9.0)
-    rspec-core (2.9.0)
-    rspec-expectations (2.9.0)
+    rspec (2.12.0)
+      rspec-core (~> 2.12.0)
+      rspec-expectations (~> 2.12.0)
+      rspec-mocks (~> 2.12.0)
+    rspec-core (2.12.1)
+    rspec-expectations (2.12.0)
       diff-lcs (~> 1.1.3)
-    rspec-mocks (2.9.0)
+    rspec-mocks (2.12.0)
+    simplecov (0.7.1)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.7.1)
+    simplecov-html (0.7.1)
     slop (2.4.4)
     systemu (2.5.0)
-    typhoeus (0.3.3)
-      mime-types
+    typhoeus (0.5.3)
+      ethon (~> 0.5.3)
     uuid (2.3.5)
       macaddr (~> 1.0)
 
@@ -45,8 +53,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  factory_girl (< 3)
-  kp_basic!
+  factory_girl
   pry
   rspec
+  s_object!
+  simplecov
   uuid

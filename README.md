@@ -11,7 +11,7 @@ It circumvents `QUERY_TOO_COMPLICATED` errors for SObjects with many fields.
 Why should'nt i use it?
 -----------------------
 
-No tests contained. Any help appreciated.
+Some tests contained. Any help appreciated.
 
 How do i use it?
 ----------------
@@ -37,9 +37,10 @@ Retrieve Objects:
     SObject::Opportunity.find('006AABBCCDDEE')
     # => #<SObject::Opportunity:0x10d81d040 @fields={...}>
 
-Issue arbitrary SOQL-Queries:
+Issue arbitrary SOQL-Queries (Beware of Injection-Attacks):
 
     SObject::Query.new(:type => 'Account', :fields => %w(Id firstName lastName), :where => 'ownerId=ABCDEFG')
     # => #<SObject::Account:0x10d81d040 @fields={...}>
+
 
 Thank you
