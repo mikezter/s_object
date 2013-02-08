@@ -120,23 +120,29 @@ module SObject
     def save_method
       new_record? ? :post : :patch
     end
-
+    
     def saveable_fields
       saveable_fields = {}
 
       fields.each do |key, value|
+      
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
-        next if value.nil? || value == ''
+        next if value.nil? 
 
-        if field_type(key) == 'date'
-          value = to_sf_datetime_string(value.to_date)
-        elsif field_type(key) == 'datetime'
-          value = to_sf_datetime_string(value.utc)
+        if value != ''
+          if field_type(key) == 'date'
+            value = to_sf_datetime_string(value.to_date)
+            
+          elsif field_type(key) == 'datetime'
+            value = to_sf_datetime_string(value.utc)
+            
+          end
         end
 
         saveable_fields[key] = value
+        
       end
 
       return saveable_fields
