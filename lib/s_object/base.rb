@@ -128,12 +128,13 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
-        next if value.nil? || value == ''
+        unless value.nil? || value == ''
 
-        if field_type(key) == 'date'
-          value = to_sf_datetime_string(value.to_date)
-        elsif field_type(key) == 'datetime'
-          value = to_sf_datetime_string(value.utc)
+          if field_type(key) == 'date'
+            value = to_sf_datetime_string(value.to_date)
+          elsif field_type(key) == 'datetime'
+            value = to_sf_datetime_string(value.utc)
+          end
         end
 
         saveable_fields[key] = value
