@@ -153,9 +153,14 @@ module SObject
             @account.send(:saveable_fields).should eq @cleaned_fields
           end
 
-          it 'allows empty values' do
+          it 'does not allow empty values' do
             @account.stub(:fields).and_return({foo: ""})
-            @account.send(:saveable_fields).should eq  foo: ""
+            @account.send(:saveable_fields).should eq({})
+          end
+
+          it 'allows nil values' do
+            @account.stub(:fields).and_return({ foo: nil })
+            @account.send(:saveable_fields).should eq foo: nil
           end
         end
 
