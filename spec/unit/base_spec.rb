@@ -143,6 +143,7 @@ module SObject
         end
 
         context '#saveable_fields' do
+
           before do
             Base.stub(:field_exists?).and_return true
             Base.stub(:field_property).and_return true
@@ -153,8 +154,8 @@ module SObject
           end
 
           it 'allows empty values' do
-            @cleaned_fields['foo'] = ''
-            @account.send(:saveable_fields).should eq @cleaned_fields
+            @account.stub(:fields).and_return({foo: ""})
+            @account.send(:saveable_fields).should eq  foo: ""
           end
         end
 
