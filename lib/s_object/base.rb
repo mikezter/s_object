@@ -128,7 +128,7 @@ module SObject
         key = key.downcase
         next unless field_exists?(key)
         next unless field_property(key, 'updateable')
-        next if value.blank?
+        next if value == ''
         unless value.nil?
 
           if field_type(key) == 'date'
