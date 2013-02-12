@@ -159,8 +159,9 @@ module SObject
           end
 
           it 'allows nil values' do
-            @account.stub(:fields).and_return({ foo: nil })
-            @account.send(:saveable_fields).should eq foo: nil
+            fields = @account.instance_variable_get("@fields")
+            @account.instance_variable_set("@fields", fields.merge({foo: nil}))
+            @account.send(:saveable_fields).should include(foo: nil)
           end
         end
 
