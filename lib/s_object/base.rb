@@ -39,7 +39,7 @@ module SObject
     end
 
     def fields
-      @fields.delete_if{ |key, value| value.nil? }
+      @fields
     end
 
     def type
