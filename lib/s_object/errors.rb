@@ -22,6 +22,7 @@ module SObject
 
   class ValidationError < SalesforceError; end
 
+  InvalidFieldError        = Class.new SalesforceError
 
   def self.error_class_for(message, code)
     error_class = case code
@@ -30,6 +31,7 @@ module SObject
       when 'DUPLICATE_VALUE'                   then DuplicateValueError
       when 'INVALID_SESSION_ID'                then SessionError
       when 'FIELD_CUSTOM_VALIDATION_EXCEPTION' then ValidationError
+      when 'INVALID_FIELD'                     then InvalidFieldError
       else                                          SalesforceError
     end
 
