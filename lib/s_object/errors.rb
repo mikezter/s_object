@@ -1,5 +1,5 @@
 module SObject
-  class Error < StandardError; end
+  Error = Class.new StandardError
 
   class CurlError < Error; end
 
@@ -12,16 +12,11 @@ module SObject
     end
   end
 
-  class QueryTooComplicatedError < SalesforceError; end
-
-  class ObjectNotFoundError < SalesforceError; end
-
-  class DuplicateValueError < SalesforceError; end
-
-  class SessionError < SalesforceError; end
-
-  class ValidationError < SalesforceError; end
-
+  QueryTooComplicatedError = Class.new SalesforceError
+  ObjectNotFoundError      = Class.new SalesforceError
+  DuplicateValueError      = Class.new SalesforceError
+  SessionError             = Class.new SalesforceError
+  ValidationError          = Class.new SalesforceError
   InvalidFieldError        = Class.new SalesforceError
 
   def self.error_class_for(message, code)
