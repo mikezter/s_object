@@ -18,16 +18,18 @@ module SObject
   SessionError             = Class.new SalesforceError
   ValidationError          = Class.new SalesforceError
   InvalidFieldError        = Class.new SalesforceError
+  InsertUpdateActivate     = Class.new SalesforceError
 
   def self.error_class_for(message, code)
     error_class = case code
-      when 'QUERY_TOO_COMPLICATED'             then QueryTooComplicatedError
-      when 'NOT_FOUND'                         then ObjectNotFoundError
-      when 'DUPLICATE_VALUE'                   then DuplicateValueError
-      when 'INVALID_SESSION_ID'                then SessionError
-      when 'FIELD_CUSTOM_VALIDATION_EXCEPTION' then ValidationError
-      when 'INVALID_FIELD'                     then InvalidFieldError
-      else                                          SalesforceError
+      when 'QUERY_TOO_COMPLICATED'                 then QueryTooComplicatedError
+      when 'NOT_FOUND'                             then ObjectNotFoundError
+      when 'DUPLICATE_VALUE'                       then DuplicateValueError
+      when 'INVALID_SESSION_ID'                    then SessionError
+      when 'FIELD_CUSTOM_VALIDATION_EXCEPTION'     then ValidationError
+      when 'INVALID_FIELD'                         then InvalidFieldError
+      when 'CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY'  then InsertUpdateActivate
+      else                                         SalesforceError
     end
 
     return error_class.new(message, code)
