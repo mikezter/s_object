@@ -35,4 +35,11 @@ module SObject
     return error_class.new(message, code)
   end
 
+  class AuthenticationError < SalesforceError
+    def initialize(json_body)
+      err = JSON.parse json_body
+      super("#{err['error_description']} (#{err['error']})")
+    end
+  end
+
 end

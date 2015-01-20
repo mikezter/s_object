@@ -11,8 +11,9 @@ module SObject
     # username: user@domain.com.testbox
     # password: passwordSECURITY_TOKEN
     #
-    def login(options = {})
-      @options = options
+    def login(config)
+      @config = config.dup
+      @access_token_url = @config.fetch 'access_token_url'
       credentials
     end
 
@@ -39,8 +40,8 @@ module SObject
     def headers
       {
         'Authorization' => "OAuth #{access_token}",
-        'Content-Type' => 'application/json; charset=UTF-8',
-        'Accept' => 'application/json',
+        'Content-Type'  => 'application/json; charset=UTF-8',
+        'Accept'        => 'application/json',
         "X-PrettyPrint" => "1"
       }
     end
@@ -49,22 +50,18 @@ module SObject
       @credentials ||= request_credentials
     end
 
-  private
+    private
 
     def request_credentials
-      response = Typhoeus::Request.post(config['access_token_url'], :params => config)
-      raise "Couldn't request token" unless response.success?
+      response = Typhoeus::Request.post(@access_token_url, params: @config)
 
+      raise AuthenticationError.new(response.body) unless response.success?
       credentials = JSON.parse(response.body)
 
       # Salesforce doesn't seems to like requests straight after a token request
       sleep 1
 
       return credentials
-    end
-
-    def config
-      @options
     end
 
   end
