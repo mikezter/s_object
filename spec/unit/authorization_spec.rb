@@ -4,11 +4,13 @@ require 'spec_helper'
 module SObject
   describe Authorization do
     subject { Authorization }
+    let(:access_token_url) { 'https://test.salesforce.com/services/oauth2/token' }
+    let(:config) { { 'access_token_url' => access_token_url } }
 
     it '.login' do
       credentials =  { 'access_token' => 'token', 'instance_url' => 'www.foo.com'}
       subject.stub(:credentials).and_return credentials
-      subject.login.should eq credentials
+      subject.login(config).should eq credentials
     end
 
     it '.access_token' do
@@ -61,32 +63,28 @@ module SObject
 
     context 'private methods' do
       context '.request_credentials' do
-        before :each do
-          @config = { 'access_token_url' => 'www.foo-bar.com' }
-          subject.stub(:config).and_return @config
-        end
+        let(:json_string) {
+          '{"desc":{"someKey":"someValue","anotherKey":"value"}}'
+        }
+        let(:response_hash) { JSON.parse json_string }
 
         it 'successful request' do
-          json_string = '{"desc":{"someKey":"someValue","anotherKey":"value"}}'
-          Typhoeus::Request.should_receive(:post).with('www.foo-bar.com', :params => @config).
-            once.and_return mock( :success? => true, :body => json_string)
+          Typhoeus::Request.should_receive(:post).
+            with(access_token_url, params: config).once.
+            and_return mock(success?: true, body: json_string)
 
-          subject.send(:request_credentials).should eq JSON.parse(json_string)
+          subject.send(:request_credentials).should eq response_hash
+
         end
 
         it 'not successful request' do
-          Typhoeus::Request.should_receive(:post).with('www.foo-bar.com', :params => @config).
-            once.and_return mock( :success? => false)
+          Typhoeus::Request.should_receive(:post).
+            with(access_token_url, :params => config).once.
+            and_return mock(success?: false)
           expect { subject.send(:request_credentials) }.to raise_error
         end
       end
 
-      it '.config' do
-        subject.stub(:credentials).and_return {}
-        subject.login
-
-        subject.send(:config).should be_kind_of Hash
-      end
     end
 
   end

@@ -1,5 +1,5 @@
 module SObject
-  class Error < StandardError; end
+  Error = Class.new StandardError
 
   class CurlError < Error; end
 
@@ -12,28 +12,34 @@ module SObject
     end
   end
 
-  class QueryTooComplicatedError < SalesforceError; end
-
-  class ObjectNotFoundError < SalesforceError; end
-
-  class DuplicateValueError < SalesforceError; end
-
-  class SessionError < SalesforceError; end
-
-  class ValidationError < SalesforceError; end
-
+  QueryTooComplicatedError      = Class.new SalesforceError
+  ObjectNotFoundError           = Class.new SalesforceError
+  DuplicateValueError           = Class.new SalesforceError
+  SessionError                  = Class.new SalesforceError
+  ValidationError               = Class.new SalesforceError
+  InvalidFieldError             = Class.new SalesforceError
+  InsertUpdateActivateError     = Class.new SalesforceError
 
   def self.error_class_for(message, code)
     error_class = case code
-      when 'QUERY_TOO_COMPLICATED'             then QueryTooComplicatedError
-      when 'NOT_FOUND'                         then ObjectNotFoundError
-      when 'DUPLICATE_VALUE'                   then DuplicateValueError
-      when 'INVALID_SESSION_ID'                then SessionError
-      when 'FIELD_CUSTOM_VALIDATION_EXCEPTION' then ValidationError
-      else                                          SalesforceError
+      when 'QUERY_TOO_COMPLICATED'                 then QueryTooComplicatedError
+      when 'NOT_FOUND'                             then ObjectNotFoundError
+      when 'DUPLICATE_VALUE'                       then DuplicateValueError
+      when 'INVALID_SESSION_ID'                    then SessionError
+      when 'FIELD_CUSTOM_VALIDATION_EXCEPTION'     then ValidationError
+      when 'INVALID_FIELD'                         then InvalidFieldError
+      when 'CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY'  then InsertUpdateActivateError
+      else                                         SalesforceError
     end
 
     return error_class.new(message, code)
+  end
+
+  class AuthenticationError < SalesforceError
+    def initialize(json_body)
+      err = JSON.parse json_body
+      super("#{err['error_description']} (#{err['error']})")
+    end
   end
 
 end

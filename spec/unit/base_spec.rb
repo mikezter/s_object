@@ -122,13 +122,6 @@ module SObject
           end
         end
 
-        it '#saveable_fields' do
-          Base.stub(:field_exists?).and_return true
-          Base.stub(:field_property).and_return true
-
-          @account.send(:saveable_fields).should eq @cleaned_fields
-        end
-
         it '#metadata' do
           Base.stub(:metadata).and_return 'Class Metadata'
           @account.send(:metadata).should eq 'Class Metadata'
@@ -147,6 +140,29 @@ module SObject
         it '#field_property' do
           Base.stub(:field_property).and_return 'Class Field Property'
           @account.send(:field_property, 'id', 'updateable').should eq 'Class Field Property'
+        end
+
+        context '#saveable_fields' do
+
+          before do
+            Base.stub(:field_exists?).and_return true
+            Base.stub(:field_property).and_return true
+          end
+
+          it 'returns the saveable fields' do
+            @account.send(:saveable_fields).should eq @cleaned_fields
+          end
+
+          it 'does not allow empty values' do
+            @account.stub(:fields).and_return({foo: ""})
+            @account.send(:saveable_fields).should eq({})
+          end
+
+          it 'allows nil values' do
+            fields = @account.instance_variable_get("@fields")
+            @account.instance_variable_set("@fields", fields.merge({foo: nil}))
+            @account.send(:saveable_fields).should include(foo: nil)
+          end
         end
 
         context '#to_datetime_string' do

@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '1.9.3'
+
 gem 'simplecov'
-# Specify your gem's dependencies in kp_basic.gemspec
+
 gemspec
